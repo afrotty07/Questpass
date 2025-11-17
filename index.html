@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>1けた & 4けた パスワード学習アプリ ✨キラキラ＋ヒント版</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    h1 {
+      font-size: 1.6rem;
+    }
+    h2 {
+      margin-top: 1.4em;
+    }
+    button {
+      margin-top: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    /* コード編集エリア */
+    .code {
+      width: 100%;
+      min-height: 200px;
+      background: #222;
+      color: #eee;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: "SF Mono", monospace;
+      white-space: pre;
+      overflow: visible;
+      box-sizing: border-box;
+    }
+    /* 児童が書き換える1行だけ目立たせる */
+    .editable-line {
+      background: #ffeb3b;
+      color: #000;
+      font-weight: bold;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    /* 出力欄 */
+    #output1, #output2 {
+      margin-top: 10px;
+      padding: 10px;
+      background: #ffffff;
+      border-radius: 6px;
+      min-height: 3em;
+      white-space: pre-wrap;
+      border: 1px solid #cccccc;
+      box-sizing: border-box;
+      font-family: system-ui, sans-serif;
+    }
+
+    /* 🌟 正解したときの光る演出 */
+    .correct-flash {
+      animation: correctFlash 0.9s ease-out;
+      box-shadow: 0 0 12px 6px gold;
+    }
+    @keyframes correctFlash {
+      0% { background: #fff59d; }
+      50% { background: #ffe082; transform: scale(1.03); }
+      100% { background: #ffffff; transform: scale(1); }
+    }
+
+    /* ✨ キラキラ粒子（パーティクル） */
+    .particle {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      pointer-events: none;
+      animation: fall 1.2s linear forwards;
+      filter: drop-shadow(0 0 6px #fff);
+      z-index: 9999;
+    }
+    @keyframes fall {
+      0%   { opacity: 1; transform: translateY(0)    scale(1);   }
+      100% { opacity: 0; transform: translateY(80px) scale(0.3); }
+    }
+
+    /* ヒント表示用 */
+    #hint-box {
+      margin-top: 10px;
+      padding: 10px;
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid #dddddd;
+      font-size: 0.95rem;
+    }
+    .hint-text {
+      margin-top: 6px;
+      padding: 6px 8px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      border-left: 3px solid #90caf9;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>✨ 1けた & 4けた パスワードを プログラムでさがそう！</h1>
+
+  <div id="helper">
+    <p>🌟 <strong>ルール</strong></p>
+    <p>1けた と 4けた の ひみつパスワードを、プログラムでみつけよう！</p>
+  </div>
+
+  <!-- 第1問 -->
+  <h2>① 第1問：1けたのひみつ数字を当ててみよう！</h2>
+  <pre id="editor1" class="code" contenteditable="true">function solve() {
+  // ▼1行だけ書きかえてOK！
+  <span class="editable-line">const candidate = "0";</span> // ← ここを じぶんで書きかえる
+
+  if (checkPassword1(candidate)) {
+    log("せいかい！ 「" + candidate + "」 だよ ✨");
+  } else {
+    log("ちがうよ！ もういちどためそう");
+  }
+}
+solve();</pre>
+  <button id="run1">第1問 実行！</button>
+  <div id="output1"></div>
+
+  <!-- 第2問 -->
+  <h2>② 第2問：総当たりで 4けた（0213）を見つけよう！</h2>
+  <p>きみが書くのは、<strong>「しらべる4けたの数字を作る 1行」</strong>だけ！</p>
+
+  <!-- 段階ヒントコーナー -->
+  <div id="hint-box">
+    <strong>🔍 ヒントを すこしずつ 見てみよう</strong>
+    <div>
+      <button type="button" data-hint="1">ヒント1</button>
+      <button type="button" data-hint="2">ヒント2</button>
+      <button type="button" data-hint="3">ヒント3</button>
+    </div>
+    <div id="hint1" class="hint-text">
+      ヒント1：いまは <code>"0000"</code> のままだから、どのループでも おなじ数字しか調べていないよ。
+    </div>
+    <div id="hint2" class="hint-text">
+      ヒント2：<code>digits[a]</code> は 0〜9 のどれか1つの数字だよ。<br>
+      ためしに <code>const candidate = digits[a] + "000";</code> にしてみると、さいしょの1けたが 0〜9 に変わっていくよ。
+    </div>
+    <div id="hint3" class="hint-text">
+      ヒント3：<code>a, b, c, d</code> を ぜんぶ つかえば 4けたの数字が作れるよ。<br>
+      たとえば → <code>digits[a] + digits[b] + digits[c] + digits[d]</code> のように 4つ つなげてみよう！
+    </div>
+  </div>
+
+  <pre id="editor2" class="code" contenteditable="true">function solve() {
+  const digits = ["0","1","2","3","4","5","6","7","8","9"];
+  let count = 0;
+
+  for (let a = 0; a < 10; a++) {
+    for (let b = 0; b < 10; b++) {
+      for (let c = 0; c < 10; c++) {
+        for (let d = 0; d < 10; d++) {
+
+          <span class="editable-line">const candidate = "0000";</span> // ← ここの1行だけを じぶんで書きかえる！
+
+          count++;
+          if (checkPassword2(candidate)) {
+            log("みつけた！ パスワードは「" + candidate + "」✨");
+            log("ためした回数: " + count + " 回");
+            return;
+          }
+        }
+      }
+    }
+  }
+  log("みつけられなかったよ… まだ candidate の 1行が ちがうかも？");
+}
+solve();</pre>
+  <button id="run2">第2問 実行！</button>
+  <div id="output2"></div>
+
+  <script>
+    // ひみつの答え
+    const SECRET1 = "3";
+    const SECRET2 = "0213";
+
+    // 演出オンオフ（最初はオフにしておき、テスト後にオン）
+    let enableEffects = false;
+
+    // ✨ 粒子を降らせる関数
+    function spawnParticles() {
+      for (let i = 0; i < 40; i++) {
+        const p = document.createElement("div");
+        p.className = "particle";
+        p.style.left = (Math.random() * window.innerWidth) + "px";
+        p.style.top  = (Math.random() * 40) + "px";
+        p.style.background = `hsl(${Math.random()*360}, 90%, 80%)`;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1200);
+      }
+    }
+
+    // 正解演出
+    function triggerCorrectEffect(problemIndex) {
+      if (!enableEffects) return;
+
+      const out = problemIndex === 1
+        ? document.getElementById("output1")
+        : document.getElementById("output2");
+
+      if (!out) return;
+
+      // 光るアニメーション
+      out.classList.remove("correct-flash");
+      void out.offsetWidth;  // reflow でアニメーションリセット
+      out.classList.add("correct-flash");
+
+      // キラキラ粒子
+      spawnParticles();
+
+      const marker = "🎉 おみごと！せいかいです！";
+      if (!out.textContent.includes(marker)) {
+        out.textContent += "\n" + marker;
+      }
+    }
+
+    // 採点用関数
+    function checkPassword1(x) {
+      const ok = (x === SECRET1);
+      if (ok) triggerCorrectEffect(1);
+      return ok;
+    }
+    function checkPassword2(x) {
+      const ok = (x === SECRET2);
+      if (ok) triggerCorrectEffect(2);
+      return ok;
+    }
+
+    // ログ出力
+    function logTo(div, msg) {
+      div.textContent += msg + "\n";
+    }
+
+    // DOM 要素取得
+    const editor1 = document.getElementById("editor1");
+    const editor2 = document.getElementById("editor2");
+    const output1 = document.getElementById("output1");
+    const output2 = document.getElementById("output2");
+    const run1Btn = document.getElementById("run1");
+    const run2Btn = document.getElementById("run2");
+
+    // ヒントボタンの処理
+    const hintButtons = document.querySelectorAll('#hint-box button[data-hint]');
+    const hint1 = document.getElementById('hint1');
+    const hint2 = document.getElementById('hint2');
+    const hint3 = document.getElementById('hint3');
+
+    hintButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const level = btn.getAttribute('data-hint');
+        if (level === '1') hint1.style.display = 'block';
+        if (level === '2') hint2.style.display = 'block';
+        if (level === '3') hint3.style.display = 'block';
+      });
+    });
+
+    // 第1問 実行
+    run1Btn.onclick = () => {
+      output1.textContent = "";
+      const code = editor1.textContent; // contenteditable <pre> からコード文字列を取得
+      const log = (m) => logTo(output1, m);
+
+      try {
+        new Function("checkPassword1", "log", code)(checkPassword1, log);
+      } catch (e) {
+        log("エラー: " + e.message);
+      }
+    };
+
+    // 第2問 実行
+    run2Btn.onclick = () => {
+      output2.textContent = "";
+      const code = editor2.textContent;
+      const log = (m) => logTo(output2, m);
+
+      try {
+        new Function("checkPassword2", "log", code)(checkPassword2, log);
+      } catch (e) {
+        log("エラー: " + e.message);
+      }
+    };
+
+    // --- 簡単なテストケース（開発者向け）---
+    console.assert(checkPassword1("3")    === true,  'checkPassword1("3") は true のはず');
+    console.assert(checkPassword1("0")    === false, 'checkPassword1("0") は false のはず');
+    console.assert(checkPassword2("0213") === true,  'checkPassword2("0213") は true のはず');
+    console.assert(checkPassword2("0000") === false, 'checkPassword2("0000") は false のはず');
+
+    // ✅ テストが終わったあとで、演出をオンにする
+    enableEffects = true;
+  </script>
+</body>
+</html>
