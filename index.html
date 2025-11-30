@@ -133,24 +133,14 @@ solve();</pre>
 
   <!-- 段階ヒントコーナー -->
   <div id="hint-box">
-    <strong>🔍 ヒントを すこしずつ 見てみよう</strong>
+    <strong>🔍 うちこむコードを見てみよう！</strong>
     <div>
       <button type="button" data-hint="1">ヒント1</button>
-      <button type="button" data-hint="2">ヒント2</button>
-      <button type="button" data-hint="3">ヒント3</button>
     </div>
     <div id="hint1" class="hint-text">
-      ヒント1：いまは <code>"0000"</code> のままだから、どのループでも おなじ数字しか調べていないよ。
+      今回はこれを打ち込もう！<code>const candidate = digits[a] + digits[b] + digits[c] + digits[d]</code>
     </div>
-    <div id="hint2" class="hint-text">
-      ヒント2：<code>digits[a]</code> は 0〜9 のどれか1つの数字だよ。<br>
-      ためしに <code>const candidate = digits[a] + "000";</code> にしてみると、さいしょの1けたが 0〜9 に変わっていくよ。
-    </div>
-    <div id="hint3" class="hint-text">
-      ヒント3：<code>a, b, c, d</code> を ぜんぶ つかえば 4けたの数字が作れるよ。<br>
-      たとえば → <code>const candidate = digits[a] + digits[b] + digits[c] + digits[d]</code> のように 4つ つなげてみよう！
-    </div>
-  </div>
+
 
   <pre id="editor2" class="code" contenteditable="true">function solve() {
   const digits = ["0","1","2","3","4","5","6","7","8","9"];
