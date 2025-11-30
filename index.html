@@ -62,9 +62,20 @@
       box-shadow: 0 0 12px 6px gold;
     }
     @keyframes correctFlash {
-      0% { background: #fff59d; }
+      0%  { background: #fff59d; }
       50% { background: #ffe082; transform: scale(1.03); }
       100% { background: #ffffff; transform: scale(1); }
+    }
+
+    /* ❌ 不正解したときの演出 (New) */
+    .incorrect-flash {
+      animation: incorrectFlash 0.4s ease-out;
+      border: 2px solid #ff5252 !important; /* 一時的に赤い枠線 */
+    }
+    @keyframes incorrectFlash {
+      0%, 100% { transform: translateX(0); background: #ffffff; }
+      25% { transform: translateX(-5px); background: #ffebee; }
+      75% { transform: translateX(5px); background: #ffebee; }
     }
 
     /* ✨ キラキラ粒子（パーティクル） */
@@ -80,7 +91,7 @@
       z-index: 9999;
     }
     @keyframes fall {
-      0%   { opacity: 1; transform: translateY(0)    scale(1);   }
+      0%   { opacity: 1; transform: translateY(0)   scale(1);   }
       100% { opacity: 0; transform: translateY(80px) scale(0.3); }
     }
 
@@ -100,6 +111,38 @@
       border-radius: 4px;
       border-left: 3px solid #90caf9;
       display: none;
+    }
+
+    /* コピーボタンのスタイル (New) */
+    .copy-btn {
+      padding: 4px 8px;
+      margin-top: 0; /* 既存のbuttonマージンを上書き */
+      font-size: 0.85rem;
+      background-color: #4CAF50; /* 緑色 */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      flex-shrink: 0; /* 縮まないようにする */
+    }
+    .copy-btn:hover {
+      background-color: #45a049;
+    }
+    .copy-container {
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      gap: 10px;
+      background: #eee;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    #codeToCopy {
+      font-family: monospace;
+      font-weight: bold;
+      color: #333;
+      flex-grow: 1;
     }
   </style>
 </head>
@@ -135,17 +178,22 @@ solve();</pre>
   <div id="hint-box">
     <strong>🔍 うちこむコードを見てみよう！</strong>
     <div>
-      <button type="button" data-hint="1">ヒント1</button>
+      <button type="button" data-hint="1">ヒントのコードを表示</button>
     </div>
     <div id="hint1" class="hint-text">
-      今回はこれを打ち込もう！<code>const candidate = digits[a] + digits[b] + digits[c] + digits[d]</code>
+      <p>今回はこれを打ち込もう！</p>
+      <div class="copy-container">
+        <code id="codeToCopy">const candidate = digits[a] + digits[b] + digits[c] + digits[d]</code>
+        <button id="copyHintBtn" class="copy-btn">コピー</button>
+      </div>
     </div>
+  </div>
 
 
   <pre id="editor2" class="code" contenteditable="true">function solve() {
   const digits = ["0","1","2","3","4","5","6","7","8","9"];
   let count = 0;
-
+   //下の行で、0~9までを総当たりで考えるよ。
   for (let a = 0; a < 10; a++) {
     for (let b = 0; b < 10; b++) {
       for (let c = 0; c < 10; c++) {
@@ -183,7 +231,7 @@ solve();</pre>
         const p = document.createElement("div");
         p.className = "particle";
         p.style.left = (Math.random() * window.innerWidth) + "px";
-        p.style.top  = (Math.random() * 40) + "px";
+        p.style.top  = (Math.random() * 40) + "px";
         p.style.background = `hsl(${Math.random()*360}, 90%, 80%)`;
         document.body.appendChild(p);
         setTimeout(() => p.remove(), 1200);
@@ -202,7 +250,7 @@ solve();</pre>
 
       // 光るアニメーション
       out.classList.remove("correct-flash");
-      void out.offsetWidth;  // reflow でアニメーションリセット
+      void out.offsetWidth;  // reflow でアニメーションリセット
       out.classList.add("correct-flash");
 
       // キラキラ粒子
@@ -214,21 +262,82 @@ solve();</pre>
       }
     }
 
+    // ❌ 不正解演出 (New)
+    function triggerIncorrectEffect(problemIndex) {
+      if (!enableEffects) return;
+
+      const out = problemIndex === 1
+        ? document.getElementById("output1")
+        : document.getElementById("output2");
+
+      if (!out) return;
+
+      // 揺れるアニメーション
+      out.classList.remove("incorrect-flash");
+      void out.offsetWidth;  // reflow でアニメーションリセット
+      out.classList.add("incorrect-flash");
+
+      // アニメーション終了後に赤い枠線を元に戻す (0.4秒)
+      setTimeout(() => {
+         out.style.borderColor = "#cccccc";
+         out.classList.remove("incorrect-flash");
+      }, 400);
+    }
+
+
     // 採点用関数
     function checkPassword1(x) {
       const ok = (x === SECRET1);
-      if (ok) triggerCorrectEffect(1);
+      if (ok) {
+        triggerCorrectEffect(1);
+      } else {
+        triggerIncorrectEffect(1); // 不正解時にも演出を呼び出す
+      }
       return ok;
     }
     function checkPassword2(x) {
       const ok = (x === SECRET2);
-      if (ok) triggerCorrectEffect(2);
+      if (ok) {
+        triggerCorrectEffect(2);
+      } else {
+        triggerIncorrectEffect(2); // 不正解時にも演出を呼び出す
+      }
       return ok;
     }
 
     // ログ出力
     function logTo(div, msg) {
       div.textContent += msg + "\n";
+    }
+
+    // クリップボードにテキストをコピーする関数 (New)
+    function copyToClipboard(text, buttonElement) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      let success = false;
+      try {
+        success = document.execCommand('copy');
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+      
+      document.body.removeChild(textarea);
+
+      if (success && buttonElement) {
+        const originalText = buttonElement.textContent;
+        const originalBg = buttonElement.style.backgroundColor;
+        
+        buttonElement.textContent = 'コピーしました！';
+        buttonElement.style.backgroundColor = '#2196F3'; // 青に変更
+        
+        setTimeout(() => {
+          buttonElement.textContent = originalText;
+          buttonElement.style.backgroundColor = originalBg; // 元の色に戻す
+        }, 1500);
+      }
     }
 
     // DOM 要素取得
@@ -249,10 +358,19 @@ solve();</pre>
       btn.addEventListener('click', () => {
         const level = btn.getAttribute('data-hint');
         if (level === '1') hint1.style.display = 'block';
-        if (level === '2') hint2.style.display = 'block';
-        if (level === '3') hint3.style.display = 'block';
       });
     });
+
+    // コピーボタンの処理 (New)
+    const copyHintBtn = document.getElementById('copyHintBtn');
+    const codeToCopy = document.getElementById('codeToCopy');
+    
+    if (copyHintBtn && codeToCopy) {
+        copyHintBtn.addEventListener('click', () => {
+            // 前後の空白や改行を削除してコピー
+            copyToClipboard(codeToCopy.textContent.trim(), copyHintBtn);
+        });
+    }
 
     // 第1問 実行
     run1Btn.onclick = () => {
@@ -261,6 +379,7 @@ solve();</pre>
       const log = (m) => logTo(output1, m);
 
       try {
+        // new Function() で文字列として受け取ったコードを実行する
         new Function("checkPassword1", "log", code)(checkPassword1, log);
       } catch (e) {
         log("エラー: " + e.message);
@@ -274,6 +393,7 @@ solve();</pre>
       const log = (m) => logTo(output2, m);
 
       try {
+        // new Function() で文字列として受け取ったコードを実行する
         new Function("checkPassword2", "log", code)(checkPassword2, log);
       } catch (e) {
         log("エラー: " + e.message);
@@ -281,9 +401,9 @@ solve();</pre>
     };
 
     // --- 簡単なテストケース（開発者向け）---
-    console.assert(checkPassword1("3")    === true,  'checkPassword1("3") は true のはず');
-    console.assert(checkPassword1("0")    === false, 'checkPassword1("0") は false のはず');
-    console.assert(checkPassword2("0213") === true,  'checkPassword2("0213") は true のはず');
+    console.assert(checkPassword1("3")    === true,  'checkPassword1("3") は true のはず');
+    console.assert(checkPassword1("0")    === false, 'checkPassword1("0") は false のはず');
+    console.assert(checkPassword2("0213") === true,  'checkPassword2("0213") は true のはず');
     console.assert(checkPassword2("0000") === false, 'checkPassword2("0000") は false のはず');
 
     // ✅ テストが終わったあとで、演出をオンにする
