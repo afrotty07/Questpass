@@ -1,413 +1,528 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>目指せプログラミングマスター！</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-    h1 {
-      font-size: 1.6rem;
-    }
-    h2 {
-      margin-top: 1.4em;
-    }
-    button {
-      margin-top: 8px;
-      padding: 8px 16px;
-      cursor: pointer;
-    }
-    /* コード編集エリア */
-    .code {
-      width: 100%;
-      min-height: 200px;
-      background: #222;
-      color: #eee;
-      border-radius: 6px;
-      padding: 10px;
-      font-family: "SF Mono", monospace;
-      white-space: pre;
-      overflow: visible;
-      box-sizing: border-box;
-    }
-    /* 児童が書き換える1行だけ目立たせる */
-    .editable-line {
-      background: #ffeb3b;
-      color: #000;
-      font-weight: bold;
-      padding: 2px 4px;
-      border-radius: 4px;
-    }
-    /* 出力欄 */
-    #output1, #output2 {
-      margin-top: 10px;
-      padding: 10px;
-      background: #ffffff;
-      border-radius: 6px;
-      min-height: 3em;
-      white-space: pre-wrap;
-      border: 1px solid #cccccc;
-      box-sizing: border-box;
-      font-family: system-ui, sans-serif;
-    }
-
-    /* 🌟 正解したときの光る演出 */
-    .correct-flash {
-      animation: correctFlash 0.9s ease-out;
-      box-shadow: 0 0 12px 6px gold;
-    }
-    @keyframes correctFlash {
-      0%  { background: #fff59d; }
-      50% { background: #ffe082; transform: scale(1.03); }
-      100% { background: #ffffff; transform: scale(1); }
-    }
-
-    /* ❌ 不正解したときの演出 (New) */
-    .incorrect-flash {
-      animation: incorrectFlash 0.4s ease-out;
-      border: 2px solid #ff5252 !important; /* 一時的に赤い枠線 */
-    }
-    @keyframes incorrectFlash {
-      0%, 100% { transform: translateX(0); background: #ffffff; }
-      25% { transform: translateX(-5px); background: #ffebee; }
-      75% { transform: translateX(5px); background: #ffebee; }
-    }
-
-    /* ✨ キラキラ粒子（パーティクル） */
-    .particle {
-      position: fixed;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.9);
-      pointer-events: none;
-      animation: fall 1.2s linear forwards;
-      filter: drop-shadow(0 0 6px #fff);
-      z-index: 9999;
-    }
-    @keyframes fall {
-      0%   { opacity: 1; transform: translateY(0)   scale(1);   }
-      100% { opacity: 0; transform: translateY(80px) scale(0.3); }
-    }
-
-    /* ヒント表示用 */
-    #hint-box {
-      margin-top: 10px;
-      padding: 10px;
-      background: #ffffff;
-      border-radius: 6px;
-      border: 1px solid #dddddd;
-      font-size: 0.95rem;
-    }
-    .hint-text {
-      margin-top: 6px;
-      padding: 6px 8px;
-      background: #f9f9f9;
-      border-radius: 4px;
-      border-left: 3px solid #90caf9;
-      display: none;
-    }
-
-    /* コピーボタンのスタイル (New) */
-    .copy-btn {
-      padding: 4px 8px;
-      margin-top: 0; /* 既存のbuttonマージンを上書き */
-      font-size: 0.85rem;
-      background-color: #4CAF50; /* 緑色 */
-      color: white;
-      border: none;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-      flex-shrink: 0; /* 縮まないようにする */
-    }
-    .copy-btn:hover {
-      background-color: #45a049;
-    }
-    .copy-container {
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      gap: 10px;
-      background: #eee;
-      padding: 4px;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-    }
-    #codeToCopy {
-      font-family: monospace;
-      font-weight: bold;
-      color: #333;
-      flex-grow: 1;
-    }
-  </style>
-</head>
-<body>
-  <h1>✨ 1けた & 4けた パスワードを プログラムでさがそう！</h1>
-
-  <div id="helper">
-    <p>🌟 <strong>ルール</strong></p>
-    <p>1けた と 4けた の ひみつパスワードを、プログラムでみつけよう！</p>
-  </div>
-
-  <!-- 第1問 -->
-  <h2>練習：1けたのひみつ数字を当ててみよう！</h2>
-  <pre id="editor1" class="code" contenteditable="true">function solve() {
-  // ▼1行だけ書きかえてOK！
-  <span class="editable-line">const candidate = "0";</span> // ← ここを じぶんで書きかえる
-
-  if (checkPassword1(candidate)) {
-    log("せいかい！ 「" + candidate + "」 だよ ✨");
-  } else {
-    log("ちがうよ！ もういちどためそう");
-  }
-}
-solve();</pre>
-  <button id="run1">第1問 実行！</button>
-  <div id="output1"></div>
-
-  <!-- 本番 -->
-  <h2>本番：総当たりで 4けたの秘密の数字を見つけよう！</h2>
-  <p>きみが書くのは、<strong>「しらべる4けたの数字を作る 1行」</strong>だけ！</p>
-
-  <!-- 段階ヒントコーナー -->
-  <div id="hint-box">
-    <strong>🔍 うちこむコードを見てみよう！</strong>
-    <div>
-      <button type="button" data-hint="1">ヒントのコードを表示</button>
-    </div>
-    <div id="hint1" class="hint-text">
-      <p>今回はこれに書き換えよう！</p>
-      <div class="copy-container">
-        <code id="codeToCopy">const candidate = digits[a] + digits[b] + digits[c] + digits[d]</code>
-        <button id="copyHintBtn" class="copy-btn">コピー</button>
-      </div>
-    </div>
-  </div>
-
-
-  <pre id="editor2" class="code" contenteditable="true">function solve() {
-  const digits = ["0","1","2","3","4","5","6","7","8","9"];
-  let count = 0;
-   //下の行で、0~9までを総当たりで考えるよ。
-  for (let a = 0; a < 10; a++) {
-    for (let b = 0; b < 10; b++) {
-      for (let c = 0; c < 10; c++) {
-        for (let d = 0; d < 10; d++) {
-
-          <span class="editable-line">const candidate = "0000";</span> // ← ここの1行だけを じぶんで書きかえる！
-
-          count++;
-          if (checkPassword2(candidate)) {
-            log("みつけた！ パスワードは「" + candidate + "」✨");
-            log("ためした回数: " + count + " 回");
-            return;
-          }
+    <meta charset="UTF-8" />
+    <title>パスワードゲーム</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 紙吹雪エフェクト用のライブラリ -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* 全体のリセットっぽい軽い調整 */
+        * {
+            box-sizing: border-box;
         }
-      }
-    }
-  }
-  log("みつけられなかったよ… まだ candidate の 1行が ちがうかも？");
-}
-solve();</pre>
-  <button id="run2">第2問 実行！</button>
-  <div id="output2"></div>
 
-  <script>
-    // ひみつの答え
-    const SECRET1 = "3";
-    const SECRET2 = "0213";
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                sans-serif;
+            background-color: #e2e8f0;
+            /* slate-100 っぽい色 */
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.5s ease;
+        }
 
-    // 演出オンオフ（最初はオフにしておき、テスト後にオン）
-    let enableEffects = false;
+        /* 正解時の豪華な背景アニメーション */
+        @keyframes rainbow-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-    // ✨ 粒子を降らせる関数
-    function spawnParticles() {
-      for (let i = 0; i < 40; i++) {
-        const p = document.createElement("div");
-        p.className = "particle";
-        p.style.left = (Math.random() * window.innerWidth) + "px";
-        p.style.top  = (Math.random() * 40) + "px";
-        p.style.background = `hsl(${Math.random()*360}, 90%, 80%)`;
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1200);
-      }
-    }
+        body.success-mode {
+            background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fad0c4, #a18cd1, #fbc2eb, #8fd3f4);
+            background-size: 400% 400%;
+            animation: rainbow-bg 10s ease infinite;
+        }
 
-    // 正解演出
-    function triggerCorrectEffect(problemIndex) {
-      if (!enableEffects) return;
+        .card {
+            width: 100%;
+            max-width: 480px;
+            margin: 16px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: relative;
+            z-index: 10;
+            transition: min-height 0.3s ease;
+        }
 
-      const out = problemIndex === 1
-        ? document.getElementById("output1")
-        : document.getElementById("output2");
+        .card-header {
+            text-align: center;
+        }
 
-      if (!out) return;
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 4px;
+        }
 
-      // 光るアニメーション
-      out.classList.remove("correct-flash");
-      void out.offsetWidth;  // reflow でアニメーションリセット
-      out.classList.add("correct-flash");
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin: 0;
+            min-height: 1.2em; /* 高さが変わらないように確保 */
+        }
 
-      // キラキラ粒子
-      spawnParticles();
+        /* 円形画像部分 */
+        .image-wrapper {
+            display: flex;
+            justify-content: center;
+        }
 
-      const marker = "🎉 おみごと！せいかいです！";
-      if (!out.textContent.includes(marker)) {
-        out.textContent += "\n" + marker;
-      }
-    }
+        .image-circle {
+            width: 180px;
+            margin: 0 auto;
+            transition: transform 0.3s;
+        }
 
-    // ❌ 不正解演出 (New)
-    function triggerIncorrectEffect(problemIndex) {
-      if (!enableEffects) return;
+        .image-circle img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
 
-      const out = problemIndex === 1
-        ? document.getElementById("output1")
-        : document.getElementById("output2");
+        /* ジャジャーン！という感じのアニメーション */
+        @keyframes tada {
+            from { transform: scale3d(1, 1, 1); }
+            10%, 20% { transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg); }
+            30%, 50%, 70%, 90% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg); }
+            40%, 60%, 80% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg); }
+            to { transform: scale3d(1, 1, 1); }
+        }
 
-      if (!out) return;
+        .animate-tada {
+            animation: tada 1s both;
+        }
 
-      // 揺れるアニメーション
-      out.classList.remove("incorrect-flash");
-      void out.offsetWidth;  // reflow でアニメーションリセット
-      out.classList.add("incorrect-flash");
+        /* 入力表示エリア */
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
 
-      // アニメーション終了後に赤い枠線を元に戻す (0.4秒)
-      setTimeout(() => {
-         out.style.borderColor = "#cccccc";
-         out.classList.remove("incorrect-flash");
-      }, 400);
-    }
+        .input-label {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
 
+        .input-display {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+                "Liberation Mono", "Courier New", monospace;
+            font-size: 1.6rem;
+            letter-spacing: 0.4em;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 8px 16px;
+            min-width: 8rem;
+            text-align: center;
+            background-color: #fff;
+        }
 
-    // 採点用関数
-    function checkPassword1(x) {
-      const ok = (x === SECRET1);
-      if (ok) {
-        triggerCorrectEffect(1);
-      } else {
-        triggerIncorrectEffect(1); // 不正解時にも演出を呼び出す
-      }
-      return ok;
-    }
-    function checkPassword2(x) {
-      const ok = (x === SECRET2);
-      if (ok) {
-        triggerCorrectEffect(2);
-      } else {
-        triggerIncorrectEffect(2); // 不正解時にも演出を呼び出す
-      }
-      return ok;
-    }
+        .reset-button {
+            margin-top: 2px;
+            font-size: 0.7rem;
+            color: #64748b;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
 
-    // ログ出力
-    function logTo(div, msg) {
-      div.textContent += msg + "\n";
-    }
+        .reset-button:hover {
+            color: #0f172a;
+        }
 
-    // クリップボードにテキストをコピーする関数 (New)
-    function copyToClipboard(text, buttonElement) {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      
-      let success = false;
-      try {
-        success = document.execCommand('copy');
-      } catch (err) {
-        console.error('Copy failed:', err);
-      }
-      
-      document.body.removeChild(textarea);
+        /* 数字ボタン */
+        .digits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
 
-      if (success && buttonElement) {
-        const originalText = buttonElement.textContent;
-        const originalBg = buttonElement.style.backgroundColor;
+        .digit-button {
+            padding: 12px 0;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.12s ease, transform 0.06s ease,
+                box-shadow 0.12s ease, opacity 0.12s ease;
+        }
+
+        .digit-button:hover {
+            background-color: #f1f5f9;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+        }
+
+        .digit-button:active {
+            transform: scale(0.97);
+        }
+
+        .digit-button:disabled {
+            opacity: 0.4;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        /* メッセージエリア */
+        .message-area {
+            min-height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            font-size: 0.85rem;
+            background-color: #e0f2fe;
+            border-radius: 16px;
+            padding: 12px 16px;
+            position: relative;
+            /* margin-top: 8px; */
+            transition: background-color 0.3s;
+        }
         
-        buttonElement.textContent = 'コピーしました！';
-        buttonElement.style.backgroundColor = '#2196F3'; // 青に変更
-        
-        setTimeout(() => {
-          buttonElement.textContent = originalText;
-          buttonElement.style.backgroundColor = originalBg; // 元の色に戻す
-        }, 1500);
-      }
-    }
+        /* 成功時のメッセージエリア強調 */
+        .message-area.success-style {
+            background-color: #d1fae5; /* 薄い緑/エメラルド系 */
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        .message-area.success-style::before {
+             border-color: transparent transparent #d1fae5 transparent;
+        }
 
-    // DOM 要素取得
-    const editor1 = document.getElementById("editor1");
-    const editor2 = document.getElementById("editor2");
-    const output1 = document.getElementById("output1");
-    const output2 = document.getElementById("output2");
-    const run1Btn = document.getElementById("run1");
-    const run2Btn = document.getElementById("run2");
+        .message-idle {
+            color: #64748b;
+        }
 
-    // ヒントボタンの処理
-    const hintButtons = document.querySelectorAll('#hint-box button[data-hint]');
-    const hint1 = document.getElementById('hint1');
-    const hint2 = document.getElementById('hint2');
-    const hint3 = document.getElementById('hint3');
+        .message-error {
+            color: #ef4444;
+            font-weight: 500;
+        }
 
-    hintButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const level = btn.getAttribute('data-hint');
-        if (level === '1') hint1.style.display = 'block';
-      });
-    });
+        .message-success-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #059669;
+            text-align: center;
+            width: 100%;
+        }
 
-    // コピーボタンの処理 (New)
-    const copyHintBtn = document.getElementById('copyHintBtn');
-    const codeToCopy = document.getElementById('codeToCopy');
-    
-    if (copyHintBtn && codeToCopy) {
-        copyHintBtn.addEventListener('click', () => {
-            // 前後の空白や改行を削除してコピー
-            copyToClipboard(codeToCopy.textContent.trim(), copyHintBtn);
+        .message-success-text {
+            color: #334155;
+            margin: 0;
+        }
+
+        .message-strong {
+            font-weight: 700;
+            color: #0d9488;
+        }
+
+        /* 弾むようなアニメーション */
+        @keyframes bounceIn {
+            0%, 20%, 40%, 60%, 80%, 100% { animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); }
+            0% { opacity: 0; transform: scale3d(.3, .3, .3); }
+            20% { transform: scale3d(1.1, 1.1, 1.1); }
+            40% { transform: scale3d(.9, .9, .9); }
+            60% { opacity: 1; transform: scale3d(1.03, 1.03, 1.03); }
+            80% { transform: scale3d(.97, .97, .97); }
+            100% { opacity: 1; transform: scale3d(1, 1, 1); }
+        }
+
+        .animate-bounce-in {
+            animation: bounceIn 0.8s;
+        }
+
+        /* 吹き出しのしっぽ */
+        .message-area::before {
+            content: "";
+            position: absolute;
+            top: -8px;
+            left: 50%; /* 中央寄せ */
+            transform: translateX(-50%); /* 中央寄せ補正 */
+            border-width: 0 8px 8px 8px;
+            border-style: solid;
+            border-color: transparent transparent #e0f2fe transparent;
+            transition: border-color 0.3s;
+        }
+
+        /* フッター */
+        .card-footer {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <header class="card-header">
+            <!-- タイトルとサブタイトルにIDを付与してJSから操作可能に -->
+            <h1 id="card-title" class="card-title">Loading...</h1>
+            <p id="card-subtitle" class="card-subtitle">
+                Loading...
+            </p>
+        </header>
+
+        <!-- 円形画像表示エリア -->
+        <section class="image-wrapper">
+            <div id="image-circle-container" class="image-circle">
+                <img id="status-image"
+                    src="https://i.postimg.cc/fLXxG8jV/fu-kkurin01.png"
+                    alt="キャラクター画像">
+            </div>
+        </section>
+
+        <!-- メッセージ表示 -->
+        <section id="message-area" class="message-area">
+            <p id="message-text" class="message-idle">
+                ...
+            </p>
+        </section>
+
+        <!-- 入力表示 -->
+        <section class="input-area">
+            <div class="input-label">現在の入力</div>
+            <div id="input-display" class="input-display">_</div>
+            <button id="reset-button" type="button" class="reset-button">
+                クリア
+            </button>
+        </section>
+
+        <!-- 数字ボタン -->
+        <section id="digits-grid" class="digits-grid"></section>
+
+        <footer class="card-footer">
+          
+        </footer>
+    </div>
+
+    <script>
+        // ゲームのステージ設定
+        const STAGES = {
+            1: {
+                code: "2",
+                length: 1,
+                title: "１桁のパスワードを当てよう！",
+                subtitle: "画面の数字を使って、1桁の正解を見つけてね。",
+                idleMessage: "数字を1つ選んで入力してみよう。",
+                successSimple: "おめでとう🎊" // ステージ1用のシンプルな成功メッセージ
+            },
+            2: {
+                code: "0213",
+                length: 4,
+                title: "4桁パスコードで日付をあてよう",
+                subtitle: "今度は、４桁は突破できるかな？！画面の数字だけを使って入力してみよう。",
+                idleMessage: "4桁すべて入力すると結果が表示されるよ！。",
+                // ステージ2はリッチなHTMLメッセージを使うためここには定義しない
+            }
+        };
+
+        // 状態管理
+        let currentStage = 1; // 現在のステージ (1 or 2)
+        let input = "";
+        let status = "idle"; // "idle" | "success" | "error"
+        let isTransitioning = false; // ステージ移行中フラグ
+
+        // 要素取得
+        const body = document.body;
+        const cardTitle = document.getElementById("card-title");
+        const cardSubtitle = document.getElementById("card-subtitle");
+        const inputDisplay = document.getElementById("input-display");
+        const resetButton = document.getElementById("reset-button");
+        const digitsGrid = document.getElementById("digits-grid");
+        const messageArea = document.getElementById("message-area");
+        const messageText = document.getElementById("message-text");
+        const statusImage = document.getElementById("status-image");
+        const imageContainer = document.getElementById("image-circle-container");
+
+        // 紙吹雪エフェクト
+        function triggerConfetti() {
+            const duration = 2000; // 少し短めに
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+            const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+            const interval = setInterval(function () {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
+                }));
+            }, 250);
+        }
+
+        // UI更新（ステージ設定に基づいて表示を変更）
+        function updateUI() {
+            const config = STAGES[currentStage];
+
+            // タイトルとサブタイトル更新
+            cardTitle.textContent = config.title;
+            cardSubtitle.textContent = config.subtitle;
+
+            // 入力表示（足りない桁は _ で埋める。ステージによって桁数が違う）
+            let placeholder = "";
+            for(let i=0; i < config.length; i++) placeholder += "_";
+            const padded = (input + placeholder).slice(0, config.length);
+            inputDisplay.textContent = padded;
+
+            // ボタンの無効化判定
+            const buttons = digitsGrid.querySelectorAll("button");
+            buttons.forEach((btn) => {
+                // 移行中、または桁数が埋まったら無効化
+                btn.disabled = isTransitioning || input.length >= config.length;
+            });
+            resetButton.disabled = isTransitioning;
+
+
+            // クラスのリセット
+            messageText.className = "";
+            messageArea.className = "message-area";
+            // ステージ1の成功時はアニメーションを維持、それ以外はリセット
+            if (!(currentStage === 1 && status === "success")) {
+                 imageContainer.classList.remove("animate-tada");
+                 body.classList.remove("success-mode");
+            }
+
+            // メッセージ表示の分岐
+            if (status === "idle") {
+                messageText.classList.add("message-idle");
+                messageText.textContent = config.idleMessage;
+            } else if (status === "error") {
+                messageText.classList.add("message-error");
+                messageText.textContent = "残念！違います。もう一度試してみましょう。";
+            } else if (status === "success") {
+                // 成功時の共通演出
+                body.classList.add("success-mode");
+                messageArea.classList.add("success-style");
+                messageArea.classList.add("animate-bounce-in");
+                imageContainer.classList.add("animate-tada");
+
+                if (currentStage === 1) {
+                    // ステージ1の成功メッセージ
+                    messageText.innerHTML = `<p class="message-success-title" style="font-size:1.5rem;">${config.successSimple}</p>`;
+                } else {
+                    // ステージ2の成功メッセージ（リッチなHTML）
+                    messageText.innerHTML =
+                        '<div>' +
+                        '<p class="message-success-title">🎉 正解！パスワードは 0213 でした。</p>' +
+                        '<p class="message-success-text">' +
+                        "青翔開智中学校・高等学校の " +
+                        '<span class="message-strong">青開学会</span> は、' +
+                        '<span class="message-strong">2月13日</span> に開催されます。<span class="message-strong">ぜひ来てね！</span>' +
+                        "</p>" +
+                        '<p class="message-success-text" style="margin-top:8px;">スタンプラリーのキーワードは「<span class="message-strong">グローバル</span>」だよ！</p>' +
+                        '<p>次のクエストに向かおう！</p>' +
+                        "</div>";
+                     // 最終ステージクリア時のみ画像を変更
+                    statusImage.src = "https://i.postimg.cc/rFyrjVb9/fu-kkurin03.png";
+                }
+            }
+        }
+
+        // 次のステージへ移行処理
+        function transitionToNextStage() {
+            isTransitioning = true;
+            updateUI(); // ボタンを無効化するために一度更新
+
+            setTimeout(() => {
+                // ステージを進める
+                currentStage = 2;
+                // 状態をリセット
+                input = "";
+                status = "idle";
+                isTransitioning = false;
+                
+                // 演出用クラスや画像をリセット
+                body.classList.remove("success-mode");
+                messageArea.classList.remove("success-style");
+                messageArea.classList.remove("animate-bounce-in");
+                imageContainer.classList.remove("animate-tada");
+                statusImage.src = "https://i.postimg.cc/fLXxG8jV/fu-kkurin01.png";
+
+                updateUI(); // 新しいステージのUIを表示
+            }, 1500); // 1.5秒後に遷移（紙吹雪の余韻のため少し長めに）
+        }
+
+
+        // 数字ボタンが押されたとき
+        function handleDigitClick(digit) {
+            if (isTransitioning) return;
+            const config = STAGES[currentStage];
+            if (input.length >= config.length) return;
+
+            const next = input + digit;
+            input = next;
+
+            // 桁数が埋まったら判定
+            if (next.length === config.length) {
+                if (next === config.code) {
+                    status = "success";
+                    triggerConfetti(); // 正解したら紙吹雪
+
+                    if (currentStage === 1) {
+                        transitionToNextStage(); // ステージ1なら次へ
+                    }
+                } else {
+                    status = "error";
+                }
+            } else {
+                status = "idle";
+            }
+
+            updateUI();
+        }
+
+        // クリアボタン
+        resetButton.addEventListener("click", () => {
+            if (isTransitioning) return;
+            input = "";
+            status = "idle";
+            updateUI();
         });
-    }
 
-    // 第1問 実行
-    run1Btn.onclick = () => {
-      output1.textContent = "";
-      const code = editor1.textContent; // contenteditable <pre> からコード文字列を取得
-      const log = (m) => logTo(output1, m);
+        // 数字ボタンを生成
+        function setupDigitButtons() {
+            const digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+            digits.forEach((d) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.textContent = d;
+                btn.className = "digit-button";
+                btn.addEventListener("click", () => handleDigitClick(d));
+                digitsGrid.appendChild(btn);
+            });
+        }
 
-      try {
-        // new Function() で文字列として受け取ったコードを実行する
-        new Function("checkPassword1", "log", code)(checkPassword1, log);
-      } catch (e) {
-        log("エラー: " + e.message);
-      }
-    };
-
-    // 第2問 実行
-    run2Btn.onclick = () => {
-      output2.textContent = "";
-      const code = editor2.textContent;
-      const log = (m) => logTo(output2, m);
-
-      try {
-        // new Function() で文字列として受け取ったコードを実行する
-        new Function("checkPassword2", "log", code)(checkPassword2, log);
-      } catch (e) {
-        log("エラー: " + e.message);
-      }
-    };
-
-    // --- 簡単なテストケース（開発者向け）---
-    console.assert(checkPassword1("3")    === true,  'checkPassword1("3") は true のはず');
-    console.assert(checkPassword1("0")    === false, 'checkPassword1("0") は false のはず');
-    console.assert(checkPassword2("0213") === true,  'checkPassword2("0213") は true のはず');
-    console.assert(checkPassword2("0000") === false, 'checkPassword2("0000") は false のはず');
-
-    // ✅ テストが終わったあとで、演出をオンにする
-    enableEffects = true;
-  </script>
+        // 初期化
+        setupDigitButtons();
+        updateUI(); // 初期ステージ(1)のUIを表示
+    </script>
 </body>
+
 </html>
